@@ -27,9 +27,11 @@ class _SignInScreenState extends State<SignInScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 90),
-                Text('Get Started With',
-                    style: textTheme.titleLarge
-                        ?.copyWith(fontSize: 28, fontWeight: FontWeight.w600)),
+                Text(
+                  'Get Started With',
+                  style: textTheme.titleLarge
+                      ?.copyWith(fontSize: 28, fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 20),
                 _buildSignInForm(),
                 const SizedBox(height: 24),

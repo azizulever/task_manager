@@ -50,16 +50,32 @@ class TaskCard extends StatelessWidget {
   }
 
   void _onTapEditButton(BuildContext context) {
-    showDialog(context: context, builder: (context){
-      return AlertDialog(
-        title: const Text('Status'),
-        actions: [
-          TextButton(onPressed: () {}, child: const Text('Cancel')),
-          TextButton(onPressed: () {}, child: const Text('Okay')),
-        ],
-      );
-    });
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Status'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: ['New', 'Completed', 'Cancelled', 'Progress'].map((e){
+                return ListTile(
+                  onTap: () {},
+                  title: Text(e),
+                );
+              }).toList(),
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Cancel')),
+              TextButton(onPressed: () {}, child: const Text('Okay')),
+            ],
+          );
+        });
   }
+
   void _onTapDeleteButton() {}
 
   Widget _buildTaskStatusChip() {
