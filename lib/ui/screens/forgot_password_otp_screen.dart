@@ -1,13 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager/data/models/network_response.dart';
+import 'package:task_manager/data/services/network_caller.dart';
+import 'package:task_manager/data/utils/urls.dart';
 import 'package:task_manager/ui/screens/reset_password_screen.dart';
 import 'package:task_manager/ui/screens/sign_in_screen.dart';
 import 'package:task_manager/ui/utils/app_colors.dart';
 import 'package:task_manager/ui/widgets/screen_background.dart';
+import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 
 class ForgotPasswordOtpScreen extends StatefulWidget {
-  const ForgotPasswordOtpScreen({super.key});
+  const ForgotPasswordOtpScreen({super.key, required this.userEmail});
+  final String userEmail;
 
   @override
   State<ForgotPasswordOtpScreen> createState() =>
@@ -15,6 +20,9 @@ class ForgotPasswordOtpScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
+  final TextEditingController _otpTEController = TextEditingController();
+  bool _otpVerificationProgress = false;
+
   @override
   Widget build(BuildContext context) {
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -80,6 +88,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
     return Column(
       children: [
         PinCodeTextField(
+          controller: _otpTEController,
           length: 6,
           animationType: AnimationType.fade,
           keyboardType: TextInputType.number,
@@ -107,6 +116,7 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
   }
 
   void _onTapNextButton() {
+    _getOTPVerification();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -121,5 +131,25 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
       MaterialPageRoute(builder: (context) => const SignInScreen()),
       (_) => false,
     );
+  }
+
+  Future<void> _getOTPVerification() async {
+    _otpVerificationProgress = true;
+    setState(() {});
+    final NetworkResponse response = await NetworkCaller.getRequest(
+        url: Urls.getOTP(widget.userEmail, _otpTEController.text));
+    if (response.isSuccess) {
+      showSnackBarMessage(context, 'OTP Verified');
+    } else {
+      showSnackBarMessage(context, response.errorMessage, true);
+    }
+    _otpVerificationProgress = false;
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _otpTEController.dispose();
+    super.dispose();
   }
 }
