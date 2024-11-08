@@ -115,13 +115,13 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
     );
   }
 
-  void _onTapNextButton(String userEmail) {
+  void _onTapNextButton(String email) {
     _getOTPVerification();
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ResetPasswordScreen(
-            userEmail: userEmail,
+            userEmail: email,
             otp: _otpTEController.text
         ),
       ),

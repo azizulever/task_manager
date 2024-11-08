@@ -131,18 +131,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     );
   }
 
-  void _onTapNextButton() {
-    _setPassword();
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const SignInScreen()),
-          (_) => false,
-    );
+  void _onTapNextButton() async {
+    print('RPS: ${widget.otp}, ${widget.userEmail}, ${_passwordTEController.text}');
+    final result = await _setPassword();
+    print('Result: $result');
+    if(result) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SignInScreen()),
+            (_) => false,
+      );
+    }
   }
 
-  Future<void> _setPassword() async {
-    if(_passwordTEController.text != _confirmPassTEController) {
-      return;
+  Future<bool> _setPassword() async {
+    if(_passwordTEController.text != _confirmPassTEController.text) {
+      showSnackBarMessage(context, 'Do not match the password, try again');
+      return false;
     }
     _setPasswordInProgress = true;
     setState(() {});
@@ -159,9 +164,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       showSnackBarMessage(context, 'New Password Set');
     } else {
     showSnackBarMessage(context, response.errorMessage, true);
+    return false;
     }
     _setPasswordInProgress = false;
     setState(() {});
+    return true;
   }
 
   void _onTapSignIn() {
