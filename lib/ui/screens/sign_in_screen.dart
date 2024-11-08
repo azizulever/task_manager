@@ -156,6 +156,7 @@ class _SignInScreenState extends State<SignInScreen> {
     _inProgress = false;
     setState(() {});
     if(response.isSuccess) {
+
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

@@ -8,5 +8,5 @@ class Urls {
   static String getOTP(String email, String otp) {
     return '$_baseUrl/RecoverVerifyOtp/$email/$otp';
   }
-
+  static const String recoverResetPassword = '$_baseUrl/RecoverResetPassword';
 }
