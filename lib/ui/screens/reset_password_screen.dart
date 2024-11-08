@@ -11,7 +11,9 @@ import 'package:task_manager/ui/widgets/screen_background.dart';
 import 'package:task_manager/ui/widgets/snack_bar_message.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  const ResetPasswordScreen({super.key, required this.userEmail, required String this.otp});
+  final String userEmail;
+  final String otp;
 
   @override
   State<ResetPasswordScreen> createState() =>
@@ -21,12 +23,14 @@ class ResetPasswordScreen extends StatefulWidget {
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTEController = TextEditingController();
-  final TextEditingController _confirmpassTEController = TextEditingController();
+  final TextEditingController _confirmPassTEController = TextEditingController();
   bool _setPasswordInProgress = false;
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme
+        .of(context)
+        .textTheme;
 
     return Scaffold(
       body: ScreenBackground(
@@ -79,7 +83,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           TextSpan(
               text: "Sign In",
               style: const TextStyle(color: AppColors.themeColor),
-              recognizer: TapGestureRecognizer()..onTap = _onTapSignIn),
+              recognizer: TapGestureRecognizer()
+                ..onTap = _onTapSignIn),
         ],
       ),
     );
@@ -94,18 +99,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             controller: _passwordTEController,
             decoration: const InputDecoration(hintText: 'Password'),
-            validator: (String? value){
-              if(value?.isEmpty == true) {
+            validator: (String? value) {
+              if (value?.isEmpty == true) {
                 return "Enter Password";
-              } return null;
+              }
+              return null;
             },
           ),
           const SizedBox(height: 8),
           TextFormField(
-            controller: _confirmpassTEController,
+            controller: _confirmPassTEController,
             decoration: const InputDecoration(hintText: 'Confirm Password'),
-            validator: (String? value){
-              if(value?.isEmpty == true) {
+            validator: (String? value) {
+              if (value?.isEmpty == true) {
                 return "Enter Password Again";
               }
               return null;
@@ -135,24 +141,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Future<void> _setPassword() async {
+    if(_passwordTEController.text != _confirmPassTEController) {
+      return;
+    }
     _setPasswordInProgress = true;
     setState(() {});
 
     Map<String, dynamic> requestBody = {
-      'email' :
-      'OTP' :
-      'password' : _passwordTEController;
-
+    'email' : widget.userEmail,
+    'OTP' : widget.otp,
+    'password' : _passwordTEController.text
     };
 
-    final NetworkResponse response = await NetworkCaller.postRequest(url: Urls.recoverResetPassword, body: requestBody);
+    final NetworkResponse response = await NetworkCaller.postRequest(url: Urls.recoverResetPassword,
+    body: requestBody);
+    if(response.isSuccess) {
+      showSnackBarMessage(context, 'New Password Set');
+    } else {
+    showSnackBarMessage(context, response.errorMessage, true);
+    }
     _setPasswordInProgress = false;
     setState(() {});
-    if(response.isSuccess) {
-
-    } else {
-      showSnackBarMessage(context, response.errorMessage, true);
-    }
   }
 
   void _onTapSignIn() {
@@ -161,5 +170,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       MaterialPageRoute(builder: (context) => const SignInScreen()),
           (_) => false,
     );
+  }
+
+  @override
+  void dispose() {
+    _passwordTEController.dispose;
+    _confirmPassTEController.dispose();
+    super.dispose();
   }
 }

@@ -108,19 +108,22 @@ class _ForgotPasswordOtpScreenState extends State<ForgotPasswordOtpScreen> {
         ),
         const SizedBox(height: 24),
         ElevatedButton(
-          onPressed: _onTapNextButton,
+          onPressed: () => _onTapNextButton(widget.userEmail),
           child: const Icon(Icons.arrow_circle_right_outlined),
         ),
       ],
     );
   }
 
-  void _onTapNextButton() {
+  void _onTapNextButton(String userEmail) {
     _getOTPVerification();
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const ResetPasswordScreen(),
+        builder: (context) => ResetPasswordScreen(
+            userEmail: userEmail,
+            otp: _otpTEController.text
+        ),
       ),
     );
   }
