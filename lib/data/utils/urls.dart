@@ -9,4 +9,5 @@ class Urls {
     return '$_baseUrl/RecoverVerifyOtp/$email/$otp';
   }
   static const String recoverResetPassword = '$_baseUrl/RecoverResetPassword';
+  static const String addNewTask = '$_baseUrl/createTask';
 }
