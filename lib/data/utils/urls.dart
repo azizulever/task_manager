@@ -10,4 +10,5 @@ class Urls {
   }
   static const String recoverResetPassword = '$_baseUrl/RecoverResetPassword';
   static const String addNewTask = '$_baseUrl/createTask';
+  static const String newTaskList = '$_baseUrl/listTaskByStatus/New';
 }
