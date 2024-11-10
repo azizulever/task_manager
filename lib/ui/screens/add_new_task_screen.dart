@@ -23,57 +23,66 @@ class _AddNewTaskScreenState extends State<AddNewTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const TMAppbar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 42),
-                Text(
-                  'Add New Task',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 24),
-                TextFormField(
-                  controller: _titleTEController,
-                  decoration: const InputDecoration(hintText: 'Title'),
-                  validator: (String? value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return 'Enter a value';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _descriptionTEController,
-                  maxLines: 5,
-                  decoration: const InputDecoration(hintText: 'Description'),
-                  validator: (String? value) {
-                    if (value?.trim().isEmpty ?? true) {
-                      return 'Enter a value';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                Visibility(
-                  visible: !_addNewTaskInProgress,
-                  replacement: const CenteredCircularProgressIndicator(),
-                  child: ElevatedButton(
-                    onPressed: _onTapSubmitButton,
-                    child: const Icon(Icons.arrow_circle_right_outlined),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if(didPop) {
+          return;
+        }
+        Navigator.pop(context, _shouldRefreshPreviousPage);
+      },
+      child: Scaffold(
+        appBar: const TMAppbar(),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 42),
+                  Text(
+                    'Add New Task',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w500),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 24),
+                  TextFormField(
+                    controller: _titleTEController,
+                    decoration: const InputDecoration(hintText: 'Title'),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter a value';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _descriptionTEController,
+                    maxLines: 5,
+                    decoration: const InputDecoration(hintText: 'Description'),
+                    validator: (String? value) {
+                      if (value?.trim().isEmpty ?? true) {
+                        return 'Enter a value';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Visibility(
+                    visible: !_addNewTaskInProgress,
+                    replacement: const CenteredCircularProgressIndicator(),
+                    child: ElevatedButton(
+                      onPressed: _onTapSubmitButton,
+                      child: const Icon(Icons.arrow_circle_right_outlined),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
