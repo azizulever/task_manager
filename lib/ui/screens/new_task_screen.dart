@@ -44,7 +44,10 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
                 child: ListView.separated(
                   itemCount: _newTaskList.length,
                   itemBuilder: (context, index) {
-                    return TaskCard(taskModel: _newTaskList[index],);
+                    return TaskCard(
+                      taskModel: _newTaskList[index],
+                      onRefreshList: _getNewTaskList,
+                    );
                   },
                   separatorBuilder: (context, index) {
                     return const SizedBox(height: 8);
@@ -62,17 +65,17 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
     );
   }
 
-Future<void> _onTapFAButton(BuildContext context) async {
-  final bool? shouldRefresh = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const AddNewTaskScreen(),
-    ),
-  );
-  if(shouldRefresh == true) {
-    _getNewTaskList();
+  Future<void> _onTapFAButton(BuildContext context) async {
+    final bool? shouldRefresh = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddNewTaskScreen(),
+      ),
+    );
+    if (shouldRefresh == true) {
+      _getNewTaskList();
+    }
   }
-}
 
   Widget _buildSummarySection() {
     return const Padding(
@@ -107,9 +110,11 @@ Future<void> _onTapFAButton(BuildContext context) async {
     _newTaskList.clear();
     _getNewTaskListInProgress = true;
     setState(() {});
-    final NetworkResponse response = await NetworkCaller.getRequest(url: Urls.newTaskList);
-    if(response.isSuccess) {
-      final TaskListModel taskListModel = TaskListModel.fromJson(response.responseData);
+    final NetworkResponse response =
+        await NetworkCaller.getRequest(url: Urls.newTaskList);
+    if (response.isSuccess) {
+      final TaskListModel taskListModel =
+          TaskListModel.fromJson(response.responseData);
       _newTaskList = taskListModel.taskList ?? [];
     } else {
       showSnackBarMessage(context, response.errorMessage, true);
