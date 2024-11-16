@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager/ui/screens/splash_screen.dart';
-import 'package:task_manager/ui/utils/app_colors.dart';
+import 'package:task_managment_apk/ui/home/splash_screen.dart';
+import 'package:task_managment_apk/ui/widget/app_color.dart';
 
-class TaskManagerApp extends StatefulWidget {
-  const TaskManagerApp({super.key});
-
+class TaskManager extends StatefulWidget {
   static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+  const TaskManager({super.key});
+
   @override
-  State<TaskManagerApp> createState() => _TaskManagerAppState();
+  State<TaskManager> createState() => _TaskManagerState();
 }
 
-class _TaskManagerAppState extends State<TaskManagerApp> {
+class _TaskManagerState extends State<TaskManager> {
+
+//  static GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: TaskManagerApp.navigatorKey,
+    return  MaterialApp(
+      navigatorKey: TaskManager.navigatorKey,
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorSchemeSeed: AppColors.themeColor,
-        textTheme: const TextTheme(),
+        colorSchemeSeed: AppColor.themeColor,
+        textTheme:  const TextTheme(),
         inputDecorationTheme: _inputDecorationTheme(),
-        elevatedButtonTheme: _elevatedButtonThemeData(),
+        elevatedButtonTheme: _elevatedButtonThemeData()
       ),
       home: const SplashScreen(),
     );
@@ -28,34 +32,38 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
   ElevatedButtonThemeData _elevatedButtonThemeData() {
     return ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.themeColor,
+        style: ElevatedButton.styleFrom(
+        backgroundColor: AppColor.themeColor,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        fixedSize: const Size.fromWidth(double.maxFinite),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
+        padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 10
+    ),
+    fixedSize: const Size.fromWidth(double.maxFinite),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(8)
+    )
+    ),
     );
   }
+
 
   InputDecorationTheme _inputDecorationTheme() {
     return InputDecorationTheme(
-      fillColor: Colors.white,
-      filled: true,
-      hintStyle: const TextStyle(fontWeight: FontWeight.w400),
-      border: _inputBorder(),
-      enabledBorder: _inputBorder(),
-      errorBorder: _inputBorder(),
-      focusedBorder: _inputBorder(),
+        fillColor: Colors.white,
+        filled: true,
+        border: _inputBorder(),
+        enabledBorder: _inputBorder(),
+        focusedBorder: _inputBorder(),
     );
   }
 
-  OutlineInputBorder _inputBorder() {
+  OutlineInputBorder _inputBorder () {
     return OutlineInputBorder(
       borderSide: BorderSide.none,
       borderRadius: BorderRadius.circular(8),
     );
   }
+
+
 }

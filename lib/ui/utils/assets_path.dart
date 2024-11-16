@@ -1,6 +1,8 @@
-class AssetsPath {
-  static const String _imagePath = 'assets/images';
+import 'package:flutter/material.dart';
 
-  static const String backgroundSvg = '$_imagePath/background.svg'; //background image
-  static const String logoSvg = '$_imagePath/logo.svg'; //logo image
+class AssetsPath {
+  static const String _imagesPath = 'assets/images/';
+
+  static const backGroundSvg = '${_imagesPath}background.svg';
+  static const logoSvg = '${_imagesPath}logo.svg';
 }
