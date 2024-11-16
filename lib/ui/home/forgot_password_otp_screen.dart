@@ -1,9 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:task_managment_apk/data/model/network_response.dart';
-import 'package:task_managment_apk/data/services/network_caller.dart';
-import 'package:task_managment_apk/data/utils/urls.dart';
+import 'package:task_managment_apk/ui/controller/forgot_password_otp_controller.dart';
 import 'package:task_managment_apk/ui/home/reset_password_screen.dart';
 import 'package:task_managment_apk/ui/home/sign_in_screen.dart';
 import 'package:task_managment_apk/ui/widget/app_color.dart';
@@ -11,7 +10,7 @@ import 'package:task_managment_apk/ui/widget/screen_background.dart';
 import 'package:task_managment_apk/ui/widget/snack_bar_message.dart';
 
 class ForgotPasswordOTPScreen extends StatefulWidget {
-  const ForgotPasswordOTPScreen( {required this.userEmail} );
+  const ForgotPasswordOTPScreen({required this.userEmail});
 
   final String userEmail;
 
@@ -21,9 +20,9 @@ class ForgotPasswordOTPScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
-  bool _getOTPInProgress = false;
   final TextEditingController _otpTEController = TextEditingController();
-
+  final ForgotPasswordOTPController _forgotPasswordOTPController =
+      Get.find<ForgotPasswordOTPController>();
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +121,8 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>  ResetPasswordScreen(
-           userEmail: userEmail,
-          otp: _otpTEController.text
-        ),
+        builder: (context) => ResetPasswordScreen(
+            userEmail: userEmail, otp: _otpTEController.text),
       ),
     );
   }
@@ -134,26 +131,19 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const SignInScreen()),
-          (_) => false,
+      (_) => false,
     );
   }
 
   Future<void> _getOTP() async {
-    _getOTPInProgress = true;
-    setState(() {});
+    final bool result = await _forgotPasswordOTPController.getOTP(
+        widget.userEmail, _otpTEController.text.trim());
 
-    final NetworkResponse response = await NetworkCaller.getRequest(
-      url: Urls.getOTPVerify(widget.userEmail, _otpTEController.text.trim()),
-    );
-
-    if (response.isSuccess) {
+    if (result) {
       snackBarMessage(context, "OTP Verified");
     } else {
-      snackBarMessage(context, response.errorMessage, true);
+      snackBarMessage(context, _forgotPasswordOTPController.errorMessage!, true);
     }
-
-    _getOTPInProgress = false;
-    setState(() {});
   }
 
   @override
@@ -162,4 +152,3 @@ class _ForgotPasswordOTPScreenState extends State<ForgotPasswordOTPScreen> {
     super.dispose();
   }
 }
-

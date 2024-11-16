@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:task_managment_apk/ui/controller/auth_controller.dart';
 import 'package:task_managment_apk/ui/home/main_bottom_nav_bar_screen.dart';
 import 'package:task_managment_apk/ui/home/sign_in_screen.dart';
@@ -7,6 +8,7 @@ import 'package:task_managment_apk/ui/utils/assets_path.dart';
 import 'package:task_managment_apk/ui/widget/screen_background.dart';
 
 class SplashScreen extends StatefulWidget {
+  static const String name = '/';
   const SplashScreen({super.key});
 
   @override
@@ -27,17 +29,20 @@ class _SplashScreenState extends State<SplashScreen> {
     await AuthController.getAccessToken();
     if(AuthController.isLoggedIn()){
       await AuthController.getUserModel();
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainBottomNavBarScreen(),
-          ));
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => const MainBottomNavBarScreen(),
+      //     ));
+      Get.offAllNamed(MainBottomNavBarScreen.name);
     }else{
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SignInScreen(),
-          ));
+
+      Get.offAllNamed(SignInScreen.name);
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //       builder: (context) => const SignInScreen(),
+      //     ));
     }
 
   }

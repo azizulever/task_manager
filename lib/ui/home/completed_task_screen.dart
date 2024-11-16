@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:task_managment_apk/data/model/network_response.dart';
-import 'package:task_managment_apk/data/model/task_list_model.dart';
-import 'package:task_managment_apk/data/model/task_model.dart';
-import 'package:task_managment_apk/data/services/network_caller.dart';
-import 'package:task_managment_apk/data/utils/urls.dart';
+import 'package:get/get.dart';
+import 'package:task_managment_apk/ui/controller/completed_task_controller.dart';
 import 'package:task_managment_apk/ui/widget/centre_circular_progress_indicator.dart';
 import 'package:task_managment_apk/ui/widget/snack_bar_message.dart';
 import 'package:task_managment_apk/ui/widget/task_card.dart';
@@ -16,9 +13,8 @@ class CompletedTaskScreen extends StatefulWidget {
 }
 
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
-
-  bool _getCompletedTaskListInProgress = false;
-  List<TaskModel> _completedTaskList = [];
+  final CompletedTaskController _completedTaskController =
+      Get.find<CompletedTaskController>();
 
   @override
   void initState() {
@@ -28,48 +24,38 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Visibility(
-      visible: !_getCompletedTaskListInProgress,
-      replacement: const CentreCircularProgressIndicator(),
-      child: RefreshIndicator(
-        onRefresh: () async{
-          _getCompletedTaskList();
-        },
-        child: ListView.separated(
-          itemCount: _completedTaskList.length,
-          itemBuilder: (context, index) {
-            return  TaskCard(
-              taskModel: _completedTaskList[index],
-              onRefreshList: _getCompletedTaskList,
-            );
+    return GetBuilder<CompletedTaskController>(builder: (controller) {
+      return Visibility(
+        visible: !controller.inProgress,
+        replacement: const CentreCircularProgressIndicator(),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _getCompletedTaskList();
           },
-          separatorBuilder: (context, index) {
-            return const SizedBox(
-              height: 4,
-            );
-          },
+          child: ListView.separated(
+            itemCount: controller.completedTask.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskModel: controller.completedTask[index],
+                onRefreshList: _getCompletedTaskList,
+              );
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(
+                height: 4,
+              );
+            },
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _getCompletedTaskList() async {
-    _getCompletedTaskListInProgress = true;
-    _completedTaskList.clear();
-    setState(() {});
+    final bool result = await _completedTaskController.getCompletedTaskList();
 
-    final NetworkResponse response =
-    await NetworkCaller.getRequest(url: Urls.getCompletedTaskList);
-
-
-    if(response.isSuccess){
-      final TaskListModel taskListModel = TaskListModel.fromJson(response.responseData);
-      _completedTaskList  = taskListModel.taskList ?? [];
-    }else{
-      snackBarMessage(context, response.errorMessage , true);
+    if (result == false) {
+      snackBarMessage(context, _completedTaskController.errorMessage!, true);
     }
-
-    _getCompletedTaskListInProgress =false;
-    setState(() {});
   }
 }

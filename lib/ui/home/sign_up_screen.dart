@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_managment_apk/data/model/network_response.dart';
-import 'package:task_managment_apk/data/services/network_caller.dart';
-import 'package:task_managment_apk/data/utils/urls.dart';
+import 'package:get/get.dart';
+import 'package:task_managment_apk/ui/controller/sign_up_controller.dart';
 import 'package:task_managment_apk/ui/widget/app_color.dart';
 import 'package:task_managment_apk/ui/widget/centre_circular_progress_indicator.dart';
 import 'package:task_managment_apk/ui/widget/screen_background.dart';
@@ -22,11 +21,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameTEController = TextEditingController();
   final TextEditingController _mobileTEController = TextEditingController();
   final TextEditingController _passwordTEController = TextEditingController();
-  bool _inProgress = false;
+  final SignUpController _signUpController = Get.find<SignUpController>();
 
   @override
   Widget build(BuildContext context) {
-    TextTheme textTheme = Theme.of(context).textTheme;
+    TextTheme textTheme = Theme
+        .of(context)
+        .textTheme;
 
     return Scaffold(
       body: ScreenBackground(
@@ -76,7 +77,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
           TextSpan(
               text: 'Sign In',
               style: const TextStyle(color: AppColor.themeColor),
-              recognizer: TapGestureRecognizer()..onTap = _onTapSignInButton),
+              recognizer: TapGestureRecognizer()
+                ..onTap = _onTapSignInButton),
         ],
       ),
     );
@@ -169,7 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               if (value?.isEmpty ?? true) {
                 return 'Password is required';
               }
-              if (value!.length <= 6 ) {
+              if (value!.length <= 6) {
                 return 'Password must be at least 6 characters';
               }
               return null;
@@ -178,13 +180,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
           const SizedBox(
             height: 24,
           ),
-          Visibility(
-            visible: !_inProgress,
-            replacement: const CentreCircularProgressIndicator(),
-            child: ElevatedButton(
-              onPressed: _onTapNextScreenButton,
-              child: const Icon(Icons.arrow_circle_right_outlined),
-            ),
+          GetBuilder<SignUpController>(
+              builder: (controller) {
+                return Visibility(
+                  visible: !controller.inProgress,
+                  replacement: const CentreCircularProgressIndicator(),
+                  child: ElevatedButton(
+                    onPressed: _onTapNextScreenButton,
+                    child: const Icon(Icons.arrow_circle_right_outlined),
+                  ),
+                );
+              }
           ),
         ],
       ),
@@ -198,34 +204,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    _inProgress = true;
-    setState(() {});
+    final bool result = await _signUpController.signUp(
+      _emailTEController.text.trim(), _firstNameTEController.text.trim(),
+      _lastNameTEController.text.trim(), _mobileTEController.text.trim(),
+      _passwordTEController.text,);
 
-    Map<String, dynamic> requestBody =
-    {
-      "email": _emailTEController.text.trim(),
-      "firstName":_firstNameTEController.text.trim(),
-      "lastName":_lastNameTEController.text.trim(),
-      "mobile":_mobileTEController.text.trim(),
-      "password":_passwordTEController.text
-    };
-
-    NetworkResponse response = await NetworkCaller.postRequest(
-        url: Urls.registration,
-      body: requestBody,
-    );
-    _inProgress = false;
-    setState(() {});
-
-    if (response.isSuccess) {
+    if (result) {
       _clearTextField();
       snackBarMessage(context, 'New user Created');
-    }else{
-      snackBarMessage(context, response.errorMessage,true);
+    } else {
+      snackBarMessage(context, _signUpController.errorMessage!, true);
     }
   }
 
-  void _clearTextField(){
+  void _clearTextField() {
     _emailTEController.clear();
     _firstNameTEController.clear();
     _lastNameTEController.clear();
@@ -233,10 +225,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordTEController.clear();
   }
 
-  
 
   void _onTapSignInButton() {
-    Navigator.pop(context);
+    // Navigator.pop(context);
+    Get.back();
   }
 
   @override
